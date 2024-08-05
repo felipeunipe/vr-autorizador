@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.annotation.Version;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -33,5 +34,7 @@ public class Cartao {
     private LocalDateTime dhCriacao;
     @LastModifiedDate
     private LocalDateTime dhAtualizacao;
+    @Version
+    private Long version;
 
 }

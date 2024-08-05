@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -116,6 +117,22 @@ class TransacaoControllerTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.detail").value("Invalid request content."));
+
+    }
+
+    @Test
+    void transacionarReturn400QuandoTransacaoDuplicada() throws Exception {
+
+        var transacaoRequestStub = TransacaoRequestStub.criar();
+        doThrow(OptimisticLockingFailureException.class).when(transacaoService).transacionar(any(TransacaoRequest.class));
+
+        mockMvc.perform(post("/transacoes")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(transacaoRequestStub))
+                        .accept(MediaType.APPLICATION_JSON))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().is(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$").value("TRANSACAO_DUPLICADA"));
 
     }
 
